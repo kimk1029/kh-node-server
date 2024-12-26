@@ -5,7 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
-
+import userRoutes from "./routes/userRoutes"; // 사용자 라우트 추가
 dotenv.config();
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
-
+app.use("/api/users", userRoutes); // 사용자 라우트 등록
 // Database connection
 createConnection({
   type: "mysql",
