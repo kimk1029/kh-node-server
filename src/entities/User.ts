@@ -1,3 +1,5 @@
+// src/entities/User.ts
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -10,20 +12,21 @@ import { Post } from "./Post";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number; // Definite Assignment Assertion
+  id!: number;
 
   @Column({ unique: true })
-  username!: string; // Definite Assignment Assertion
+  username!: string;
 
   @Column({ unique: true })
-  email!: string; // Definite Assignment Assertion
+  email!: string;
 
   @Column()
-  password!: string; // Definite Assignment Assertion
+  password!: string;
 
   @CreateDateColumn()
-  created_at!: Date; // Definite Assignment Assertion
+  created_at!: Date;
 
   @OneToMany(() => Post, (post) => post.author)
-  posts!: Post[]; // Definite Assignment Assertion
+  posts!: Post[];
 }
+export default User;

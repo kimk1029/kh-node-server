@@ -1,3 +1,5 @@
+// src/entities/Post.ts
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -10,17 +12,17 @@ import { User } from "./User";
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  id!: number; // Definite Assignment Assertion
+  id!: number;
 
   @Column()
-  title!: string; // Definite Assignment Assertion
+  title!: string;
 
   @Column("text")
-  content!: string; // Definite Assignment Assertion
+  content!: string;
 
   @CreateDateColumn()
-  created_at!: Date; // Definite Assignment Assertion
+  created_at!: Date;
 
   @ManyToOne(() => User, (user) => user.posts, { onDelete: "CASCADE" })
-  author!: User; // Definite Assignment Assertion
+  author!: User;
 }
