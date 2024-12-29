@@ -58,6 +58,7 @@ const login = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    console.log("## login");
     const userRepository = getRepository(User);
     const { email, password } = req.body;
 
@@ -71,6 +72,7 @@ const login = async (
     const user = await userRepository.findOne({ where: { email } });
 
     if (!user) {
+      console.log("user not found");
       res.status(400).json({ message: "Invalid credentials" });
       return;
     }
@@ -79,6 +81,7 @@ const login = async (
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
+      console.log("passwd not found");
       res.status(400).json({ message: "Invalid credentials" });
       return;
     }
