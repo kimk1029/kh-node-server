@@ -93,7 +93,8 @@ const login = async (
     // JWT 토큰 생성
     const token = generateToken(user);
     console.log("### token", token);
-    res.status(200).json({ token });
+    console.log("### user", user);
+    res.status(200).json({ token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
