@@ -73,7 +73,9 @@ const login = async (
 
     if (!user) {
       console.log("user not found");
-      res.status(400).json({ message: "Invalid credentials" });
+      res
+        .status(400)
+        .json({ message: "Invalid credentials :: user not found" });
       return;
     }
 
@@ -82,7 +84,9 @@ const login = async (
 
     if (!isMatch) {
       console.log("passwd not found");
-      res.status(400).json({ message: "Invalid credentials" });
+      res
+        .status(400)
+        .json({ message: "Invalid credentials :: passwd not found" });
       return;
     }
 
