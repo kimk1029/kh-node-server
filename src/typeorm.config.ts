@@ -3,7 +3,10 @@
 import { ConnectionOptions } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User"; // User 엔티티가 있다면 추가
+import dotenv from "dotenv";
 
+// .env 파일 로드
+dotenv.config();
 const connectionOptions: ConnectionOptions = {
   type: "mysql",
   host: process.env.DB_HOST,
