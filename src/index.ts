@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
 import userRoutes from "./routes/userRoutes"; // 사용자 라우트 추가
+import connectionOptions from "./typeorm.config";
 dotenv.config();
 
 const app = express();
@@ -16,21 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // Database connection
-createConnection({
-  type: "mysql",
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT) || 3306,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  entities: [__dirname + "/entities/*.js"],
-  migrations: [__dirname + "/migrations/*.js"],
-  cli: {
-    migrationsDir: "src/migration",
-  },
-  synchronize: false, // 마이그레이션 사용을 위해 false로 설정// 개발 환경에서만 사용 (프로덕션에서는 마이그레이션 사용 권장)
-  logging: false,
-})
+createConnection(connectionOptions)
   .then(() => {
     console.log("Connected to the database");
     // Routes
