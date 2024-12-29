@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
 import userRoutes from "./routes/userRoutes"; // 사용자 라우트 추가
-import connectionOptions from "./typeorm.config";
+const connectionOptions = require("./typeorm.config"); // CommonJS 방식으로 임포트
 dotenv.config();
 
 const app = express();

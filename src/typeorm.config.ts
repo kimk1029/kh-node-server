@@ -20,4 +20,4 @@ const connectionOptions: ConnectionOptions = {
   logging: false,
 };
 
-export default connectionOptions;
+module.exports = connectionOptions; // CommonJS 방식으로 내보내기
