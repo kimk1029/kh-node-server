@@ -25,4 +25,7 @@ export class Post {
 
   @ManyToOne(() => User, (user) => user.posts, { onDelete: "CASCADE" })
   author!: User;
+
+  @Column({ type: "int", default: 0 })
+  views!: number; // 조회수 필드 추가
 }

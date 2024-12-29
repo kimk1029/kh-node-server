@@ -67,6 +67,15 @@ const getPostById = async (
   const { id } = req.params;
 
   try {
+    // 조회수 1 증가
+    await postRepository
+      .createQueryBuilder()
+      .update(Post)
+      .set({ views: () => "views + 1" })
+      .where("id = :id", { id: Number(id) })
+      .execute();
+
+    // 게시글 조회
     const post = await postRepository.findOne({
       where: { id: Number(id) },
       relations: ["author"],
@@ -83,5 +92,4 @@ const getPostById = async (
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export { createPost, getAllPosts, getPostById };
