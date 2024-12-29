@@ -58,10 +58,10 @@ const login = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    console.log("## login");
+    console.log("## login", req.body);
     const userRepository = getRepository(User);
     const { email, password } = req.body;
-
+    console.log("### email, password", email, password);
     // 필수 필드 확인
     if (!email || !password) {
       res.status(400).json({ message: "Please provide email and password" });
