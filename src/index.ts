@@ -24,7 +24,12 @@ createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [__dirname + "/entities/*.js"],
-  synchronize: true, // 개발 환경에서만 사용 (프로덕션에서는 마이그레이션 사용 권장)
+  migrations: [__dirname + "/migrations/*.js"],
+  cli: {
+    migrationsDir: "src/migration",
+  },
+  synchronize: false, // 마이그레이션 사용을 위해 false로 설정// 개발 환경에서만 사용 (프로덕션에서는 마이그레이션 사용 권장)
+  logging: false,
 })
   .then(() => {
     console.log("Connected to the database");
