@@ -11,7 +11,7 @@ const createPost = async (
 ): Promise<void> => {
   const postRepository = getRepository(Post);
   const { title, content } = req.body;
-
+  console.log("title, content", title, content);
   if (!title || !content) {
     res.status(400).json({ message: "Please provide title and content" });
     return;
