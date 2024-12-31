@@ -92,4 +92,95 @@ const getPostById = async (
     res.status(500).json({ message: "Server error" });
   }
 };
-export { createPost, getAllPosts, getPostById };
+const updatePost = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const postRepository = getRepository(Post);
+  const { id } = req.params;
+  const { title, content } = req.body;
+
+  if (!title || !content) {
+    res.status(400).json({ message: "Please provide title and content" });
+    return;
+  }
+
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const post = await postRepository.findOne({
+      where: { id: Number(id) },
+      relations: ["author"],
+    });
+
+    if (!post) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+
+    // 현재 사용자가 게시글 작성자인지 확인
+    if (post.author.id !== req.user.id) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: You can only edit your own posts" });
+      return;
+    }
+
+    // 게시글 업데이트
+    post.title = title;
+    post.content = content;
+
+    await postRepository.save(post);
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+// 게시글 삭제 컨트롤러
+const deletePost = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const postRepository = getRepository(Post);
+  const { id } = req.params;
+
+  if (!req.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const post = await postRepository.findOne({
+      where: { id: Number(id) },
+      relations: ["author"],
+    });
+
+    if (!post) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+
+    // 현재 사용자가 게시글 작성자인지 확인
+    if (post.author.id !== req.user.id) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: You can only delete your own posts" });
+      return;
+    }
+
+    await postRepository.remove(post);
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+export { createPost, getAllPosts, getPostById, updatePost, deletePost };
