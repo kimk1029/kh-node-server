@@ -1,8 +1,8 @@
 // src/typeorm.config.ts
 
 import { ConnectionOptions } from "typeorm";
-import { Post } from "./entities/Post";
-import { User } from "./entities/User"; // User 엔티티가 있다면 추가
+import { Post } from "./src/entities/Post";
+import { User } from "./src/entities/User"; // User 엔티티가 있다면 추가
 import dotenv from "dotenv";
 
 // .env 파일 로드
