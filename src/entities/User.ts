@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Post } from "./Post";
+import { Comment } from "./Comments";
 
 @Entity()
 export class User {
@@ -28,5 +29,8 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.author)
   posts!: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments!: Comment[];
 }
 export default User;

@@ -7,6 +7,10 @@ import {
   updatePost,
 } from "../controllers/postController";
 import authMiddleware from "../middlewares/authMiddleware";
+import {
+  addComment,
+  getCommentsByPost,
+} from "../controllers/commentController";
 
 const router = Router();
 
@@ -24,4 +28,10 @@ router.put("/:id", authMiddleware, updatePost);
 
 // 게시글 삭제 (인증 필요)
 router.delete("/:id", authMiddleware, deletePost);
+
+// 댓글 추가 (인증 필요)
+router.post("/:id/comments", authMiddleware, addComment);
+
+// 특정 게시글의 모든 댓글 조회
+router.get("/:id/comments", getCommentsByPost);
 export default router;

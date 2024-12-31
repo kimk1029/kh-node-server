@@ -6,8 +6,10 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
+import { Comment } from "./Comments";
 
 @Entity()
 export class Post {
@@ -28,4 +30,7 @@ export class Post {
 
   @Column({ type: "int", default: 0 })
   views!: number; // 조회수 필드 추가
+
+  @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
+  comments!: Comment[];
 }
