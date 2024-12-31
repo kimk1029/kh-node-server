@@ -148,6 +148,7 @@ const deletePost = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  console.log("---------------deletePost");
   const postRepository = getRepository(Post);
   const { id } = req.params;
 
