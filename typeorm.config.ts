@@ -19,7 +19,7 @@ const connectionOptions: ConnectionOptions = {
   cli: {
     migrationsDir: "src/migrations",
   },
-  synchronize: true, // 마이그레이션 사용을 위해 false로 설정
+  synchronize: false, // 마이그레이션 사용을 위해 false로 설정
   logging: false,
 };
 
