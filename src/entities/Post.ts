@@ -10,7 +10,12 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comments";
-
+export enum PostTag {
+  NEWS = "news",
+  TUTORIAL = "tutorial",
+  OPINION = "opinion",
+  // 필요한 태그를 추가하세요
+}
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
@@ -33,4 +38,10 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
   comments!: Comment[];
+  @Column({
+    type: "enum",
+    enum: PostTag,
+    default: PostTag.NEWS,
+  })
+  tag!: PostTag;
 }
