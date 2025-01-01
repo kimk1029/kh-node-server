@@ -4,6 +4,7 @@ import { ConnectionOptions } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User"; // User 엔티티가 있다면 추가
 import dotenv from "dotenv";
+import { Comment } from "./entities/Comments";
 
 // .env 파일 로드
 dotenv.config();
@@ -14,7 +15,7 @@ const connectionOptions: ConnectionOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [__dirname + "/entities/*.ts"],
+  entities: [User, Post, Comment, __dirname + "/entities/*.ts"],
   migrations: [__dirname + "/migrations/*.ts"],
   cli: {
     migrationsDir: "src/migrations",
