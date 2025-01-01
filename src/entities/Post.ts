@@ -4,18 +4,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   OneToMany,
+  CreateDateColumn,
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comments";
-export enum PostTag {
-  NEWS = "news",
-  TUTORIAL = "tutorial",
-  OPINION = "opinion",
-  // 필요한 태그를 추가하세요
-}
+
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
@@ -30,18 +25,22 @@ export class Post {
   @CreateDateColumn()
   created_at!: Date;
 
-  @ManyToOne(() => User, (user) => user.posts, { onDelete: "CASCADE" })
+  @Column({ default: 0 })
+  views!: number;
+
+  @ManyToOne(() => User, (user) => user.posts, {
+    eager: true,
+    onDelete: "CASCADE",
+  })
   author!: User;
 
-  @Column({ type: "int", default: 0 })
-  views!: number; // 조회수 필드 추가
-
-  @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
+  @OneToMany(() => Comment, (comment) => comment?.post, { cascade: true })
   comments!: Comment[];
+
   @Column({
     type: "enum",
-    enum: PostTag,
-    default: PostTag.NEWS,
+    enum: ["news", "tutorial", "opinion"], // 필요에 따라 enum을 별도로 정의할 수 있습니다.
+    default: "news",
   })
-  tag!: PostTag;
+  tag!: string;
 }

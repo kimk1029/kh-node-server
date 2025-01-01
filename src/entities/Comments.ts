@@ -1,5 +1,3 @@
-// src/entities/Comment.ts
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -13,20 +11,20 @@ import { Post } from "./Post";
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: number; // Definite assignment assertion
 
   @Column("text")
-  content!: string;
+  content!: string; // Definite assignment assertion
 
   @CreateDateColumn()
-  created_at!: Date;
+  created_at!: Date; // Definite assignment assertion
 
-  @ManyToOne(() => User, (user) => user?.comments, {
+  @ManyToOne(() => User, (user) => user.comments, {
     eager: true,
     onDelete: "CASCADE",
   })
-  author!: User;
+  author!: User; // Definite assignment assertion
 
   @ManyToOne(() => Post, (post) => post.comments, { onDelete: "CASCADE" })
-  post!: Post;
+  post!: Post; // Definite assignment assertion
 }
