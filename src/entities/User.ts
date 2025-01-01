@@ -7,8 +7,8 @@ import {
   CreateDateColumn,
   OneToMany,
 } from "typeorm";
-import { Post } from "./Post";
-import { Comment } from "./Comments";
+import { Post } from "./FreeBoard_Post";
+import { Comment } from "./FreeBoard_Comments";
 
 @Entity()
 export class User {

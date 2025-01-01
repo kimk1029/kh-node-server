@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
 } from "typeorm";
 import { User } from "./User";
-import { Post } from "./Post";
+import { Post } from "./FreeBoard_Post";
 
 @Entity()
 export class Comment {

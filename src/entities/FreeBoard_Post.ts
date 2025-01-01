@@ -9,7 +9,7 @@ import {
   CreateDateColumn,
 } from "typeorm";
 import { User } from "./User";
-import { Comment } from "./Comments";
+import { Comment } from "./FreeBoard_Comments";
 
 @Entity()
 export class Post {

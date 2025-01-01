@@ -1,10 +1,10 @@
 // src/typeorm.config.ts
 
 import { ConnectionOptions } from "typeorm";
-import { Post } from "./entities/Post";
+import { Post } from "./entities/FreeBoard_Post";
 import { User } from "./entities/User"; // User 엔티티가 있다면 추가
 import dotenv from "dotenv";
-import { Comment } from "./entities/Comments";
+import { Comment } from "./entities/FreeBoard_Comments";
 
 // .env 파일 로드
 dotenv.config();
