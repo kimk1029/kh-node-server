@@ -100,5 +100,34 @@ const login = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+// 사용자 존재 여부를 확인하는 컨트롤러
+const checkUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userRepository = getRepository(User);
+    const { email } = req.body;
 
-export { register, login };
+    // 이메일 필드 확인
+    if (!email) {
+      res.status(400).json({ message: "이메일이 필요합니다." });
+      return;
+    }
+
+    // 데이터베이스에서 사용자 조회
+    const user = await userRepository.findOne({ where: { email } });
+
+    if (user) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    console.error("checkUser Error:", error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
+export { register, login, checkUser };

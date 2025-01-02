@@ -2,9 +2,9 @@
 
 import { Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
-import { Post } from "../entities/FreeBoard_Post";
+import { Post } from "../entities/Post";
 import { AuthRequest } from "../middlewares/authMiddleware";
-import { Comment } from "../entities/FreeBoard_Comments";
+import { Comment } from "../entities/Comment";
 
 // 댓글 추가 컨트롤러
 const addComment = async (

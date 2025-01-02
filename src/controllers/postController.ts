@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
-import { Post } from "../entities/FreeBoard_Post";
+import { Post } from "../entities/Post";
 import { AuthRequest } from "../middlewares/authMiddleware";
 // 게시글 작성 컨트롤러
 const createPost = async (
