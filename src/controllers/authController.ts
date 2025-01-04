@@ -101,7 +101,7 @@ const login = async (
   }
 };
 // 사용자 존재 여부를 확인하는 컨트롤러
-const checkUser = async (
+const checkEmail = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -130,4 +130,34 @@ const checkUser = async (
   }
 };
 
-export { register, login, checkUser };
+// 사용자 존재 여부를 확인하는 컨트롤러
+const checkUsername = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userRepository = getRepository(User);
+    const { username } = req.body;
+
+    // 이메일 필드 확인
+    if (!username) {
+      res.status(400).json({ message: "username 이 필요합니다." });
+      return;
+    }
+
+    // 데이터베이스에서 사용자 조회
+    const user = await userRepository.findOne({ where: { username } });
+
+    if (user) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    console.error("checkUser Error:", error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
+export { register, login, checkEmail, checkUsername };
