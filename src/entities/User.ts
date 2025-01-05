@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  UpdateDateColumn,
 } from "typeorm";
 import { Post } from "./Post";
 import { Comment } from "./Comment";
@@ -32,5 +33,8 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments!: Comment[];
+
+  @UpdateDateColumn()
+  updated_at!: Date;
 }
 export default User;
