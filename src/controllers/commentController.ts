@@ -42,6 +42,7 @@ const addComment = async (
     let parentComment: Comment | undefined = undefined;
     if (parentId) {
       parentComment = await commentRepository.findOne(parentId);
+      console.log("parentComment", parentComment);
       if (!parentComment) {
         res.status(404).json({ message: "부모 댓글을 찾을 수 없습니다." });
         return;
