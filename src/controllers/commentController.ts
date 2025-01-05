@@ -16,7 +16,7 @@ const addComment = async (
   const postRepository = getRepository(Post);
   const { id } = req.params; // 게시글 ID
   const { content, parentId } = req.body;
-  console.log("parentId-->", parentId);
+  console.log("parentId-->", parentId, req.body);
   if (!content) {
     res.status(400).json({ message: "댓글 내용을 입력해주세요." });
     return;
