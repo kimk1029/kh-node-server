@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  JoinColumn,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
 import { Post } from "./Post";
@@ -27,4 +29,15 @@ export class Comment {
 
   @ManyToOne(() => Post, (post) => post.comments, { onDelete: "CASCADE" })
   post!: Post; // Definite assignment assertion
+
+  // 대댓글 기능을 위한 parent & replies 추가
+  @ManyToOne(() => Comment, (comment) => comment.replies, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "parent_id" })
+  parent!: Comment | null;
+
+  @OneToMany(() => Comment, (comment) => comment.parent)
+  replies!: Comment[];
 }
