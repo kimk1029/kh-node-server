@@ -17,7 +17,7 @@ const authMiddleware = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized:: No token" });
     return;
   }
 
@@ -29,14 +29,14 @@ const authMiddleware = async (
     const user = await userRepository.findOne(decoded.id);
 
     if (!user) {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized:: User not found" });
       return;
     }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized:: Invalid token" });
   }
 };
 
