@@ -34,6 +34,7 @@ const getMyAccount = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  console.log("req", req);
   try {
     if (!req.user) {
       res.status(401).json({ message: "Unauthorized" });
