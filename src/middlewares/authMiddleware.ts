@@ -13,7 +13,7 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  console.log("AUTH MIDDLEWARE", req);
+  console.log("AUTH MIDDLEWARE", req.headers);
   const authHeader = req.headers.authorization;
 
   console.log("AUTH123");
