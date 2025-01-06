@@ -21,7 +21,7 @@ router.get("/", getAllUsers);
 router.get("/:id", getUserById); // 인증 미들웨어 제거 (필요 시 다시 추가 가능)
 // 신규: 내 계정 관련
 // GET /api/users/account -> 내 계정 정보, posts, comments
-router.get("/account", authMiddleware, getMyAccount);
+router.get("/account", getMyAccount);
 
 // PATCH /api/users/account -> 내 계정 수정
 router.patch("/account", authMiddleware, updateMyAccount);
