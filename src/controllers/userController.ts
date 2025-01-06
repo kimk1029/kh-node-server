@@ -35,8 +35,23 @@ const getMyAccount = async (
   next: NextFunction
 ): Promise<void> => {
   console.log("req", req);
+
   try {
-    if (!req.user) {
+    // 1) 우선 쿼리 파라미터로 넘어온 id(문자열)를 가져옴
+    const idFromQuery = req.query.id;
+
+    // 2) 만약 쿼리에 id가 있으면 그걸 사용, 없으면 JWT 인증 결과인 req.user.id 사용
+    let userId: number | null = null;
+    if (idFromQuery) {
+      userId = Number(idFromQuery);
+      if (isNaN(userId)) {
+        res.status(400).json({ message: "Invalid user id" });
+        return;
+      }
+    } else if (req.user) {
+      userId = req.user.id;
+    } else {
+      // id도 없고 req.user도 없다면 → 인증/식별 불가
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
@@ -45,10 +60,10 @@ const getMyAccount = async (
     const postRepository = getRepository(Post);
     const commentRepository = getRepository(Comment);
 
-    // 1) 현재 로그인한 사용자 정보 조회
-    // 비밀번호(password) 같은 민감 정보는 제외
+    // 3) DB에서 해당 userId로 사용자 조회
+    //    비밀번호(password) 같은 민감 정보는 제외
     const user = await userRepository.findOne({
-      where: { id: req.user.id },
+      where: { id: userId },
       select: ["id", "username", "email", "created_at"],
     });
     if (!user) {
@@ -56,20 +71,20 @@ const getMyAccount = async (
       return;
     }
 
-    // 2) 내가 작성한 게시글
+    // 4) 내가 작성한 게시글
     const myPosts = await postRepository.find({
-      where: { author: { id: req.user.id } },
+      where: { author: { id: user.id } },
       order: { created_at: "DESC" },
     });
 
-    // 3) 내가 작성한 댓글 (어떤 게시글에 달렸는지 확인하기 위해 relations: ["post"] )
+    // 5) 내가 작성한 댓글 (어떤 게시글에 달렸는지 확인하기 위해 relations: ["post"] )
     const myComments = await commentRepository.find({
-      where: { author: { id: req.user.id } },
+      where: { author: { id: user.id } },
       relations: ["post"],
       order: { created_at: "DESC" },
     });
 
-    // 응답: { user, myPosts, myComments }
+    // 최종 응답: { user, myPosts, myComments }
     res.status(200).json({
       user,
       posts: myPosts,
@@ -80,7 +95,6 @@ const getMyAccount = async (
     res.status(500).json({ message: "Server error" });
   }
 };
-
 /**
  * (신규) 유저 정보 수정 (유저네임/비밀번호 등)
  * PATCH /api/account
