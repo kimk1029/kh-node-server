@@ -13,6 +13,7 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  console.log("AUTH MIDDLEWARE");
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
