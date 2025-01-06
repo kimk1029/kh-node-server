@@ -61,7 +61,6 @@ const login = async (
     console.log("## login", req.body);
     const userRepository = getRepository(User);
     const { email, password } = req.body;
-    console.log("### email, password", email, password);
     // 필수 필드 확인
     if (!email || !password) {
       res.status(400).json({ message: "Please provide email and password" });
@@ -92,8 +91,6 @@ const login = async (
 
     // JWT 토큰 생성
     const token = generateToken(user);
-    console.log("### token", token);
-    console.log("### user", user);
     res.status(200).json({ token, user });
   } catch (error) {
     console.error(error);

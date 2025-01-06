@@ -12,8 +12,6 @@ import authMiddleware from "../middlewares/authMiddleware";
 
 const router = Router();
 
-console.log("User routes loaded"); // 라우트 로드 확인 로그
-
 // 모든 사용자 조회 (인증 없이 접근 가능)
 router.get("/", getAllUsers);
 

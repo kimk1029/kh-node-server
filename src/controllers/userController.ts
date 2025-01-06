@@ -34,8 +34,6 @@ const getMyAccount = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  console.log("req", req);
-
   try {
     // 1) 우선 쿼리 파라미터로 넘어온 id(문자열)를 가져옴
     const idFromQuery = req.query.id;

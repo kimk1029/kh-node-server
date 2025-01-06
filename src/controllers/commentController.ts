@@ -16,7 +16,6 @@ const addComment = async (
   const postRepository = getRepository(Post);
   const { id } = req.params; // 게시글 ID
   const { content, parentId } = req.body;
-  console.log("parentId-->", parentId, req.body);
   if (!content) {
     res.status(400).json({ message: "댓글 내용을 입력해주세요." });
     return;
@@ -42,7 +41,6 @@ const addComment = async (
     let parentComment: Comment | undefined = undefined;
     if (parentId) {
       parentComment = await commentRepository.findOne(parentId);
-      console.log("parentComment", parentComment);
       if (!parentComment) {
         res.status(404).json({ message: "부모 댓글을 찾을 수 없습니다." });
         return;
