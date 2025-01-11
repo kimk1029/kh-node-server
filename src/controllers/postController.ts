@@ -3,6 +3,7 @@ import { getRepository } from "typeorm";
 import { Post } from "../entities/Post";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { Like } from "../entities/Like";
+import { Comment } from "../entities/Comment";
 // 게시글 작성 컨트롤러
 const createPost = async (
   req: AuthRequest,
