@@ -25,7 +25,7 @@ const addComment = async (
     res.status(401).json({ message: "인증되지 않은 사용자입니다." });
     return;
   }
-
+  console.log("-->", id, parentId, req.user);
   try {
     const post = await postRepository.findOne({
       where: { id: Number(id) },
