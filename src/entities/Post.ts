@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comment";
+import { Like } from "./Like";
 
 @Entity()
 export class Post {
@@ -43,4 +44,7 @@ export class Post {
     default: "news",
   })
   tag!: string;
+
+  @OneToMany(() => Like, (like) => like.post)
+  likes!: Like[];
 }

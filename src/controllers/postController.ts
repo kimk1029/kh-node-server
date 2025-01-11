@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
 import { Post } from "../entities/Post";
 import { AuthRequest } from "../middlewares/authMiddleware";
+import { Like } from "../entities/Like";
 // 게시글 작성 컨트롤러
 const createPost = async (
   req: AuthRequest,
@@ -85,6 +86,8 @@ const getPostById = async (
   next: NextFunction
 ): Promise<void> => {
   const postRepository = getRepository(Post);
+  const commentRepository = getRepository(Comment);
+  const likeRepository = getRepository(Like); // Like 레포지토리 추가
   const { id } = req.params;
 
   try {
@@ -107,12 +110,25 @@ const getPostById = async (
       return;
     }
 
-    res.status(200).json(post);
+    // 댓글 갯수 조회
+    const commentCount = await commentRepository.count({
+      where: { post: { id: Number(id) } },
+    });
+
+    // 좋아요 갯수 조회
+    const likeCount = await likeRepository.count({
+      where: { post: { id: Number(id) } },
+    });
+
+    // 게시글 데이터와 추가 데이터 반환
+    res.status(200).json({ ...post, commentCount, likeCount });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export default getPostById;
 const updatePost = async (
   req: AuthRequest,
   res: Response,
@@ -204,4 +220,39 @@ const deletePost = async (
     res.status(500).json({ message: "Server error" });
   }
 };
-export { createPost, getAllPosts, getPostById, updatePost, deletePost };
+const getLikedPosts = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const likeRepository = getRepository(Like);
+  const userId = req.user?.id; // 인증된 사용자 ID
+
+  try {
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    // 사용자가 좋아요한 게시글 조회
+    const likes = await likeRepository.find({
+      where: { user: { id: userId } },
+      relations: ["post"], // 게시글 관계를 함께 가져옴
+    });
+
+    const likedPosts = likes.map((like) => like.post);
+
+    res.status(200).json(likedPosts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+export {
+  createPost,
+  getAllPosts,
+  getPostById,
+  updatePost,
+  deletePost,
+  getLikedPosts,
+};

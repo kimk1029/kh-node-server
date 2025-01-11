@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Post } from "./Post";
 import { Comment } from "./Comment";
+import { Like } from "./Like";
 
 @Entity()
 export class User {
@@ -36,5 +37,7 @@ export class User {
 
   @UpdateDateColumn()
   updated_at!: Date;
+  @OneToMany(() => Like, (like) => like.user)
+  likes!: Like[];
 }
 export default User;
