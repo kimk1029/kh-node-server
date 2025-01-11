@@ -248,6 +248,47 @@ const getLikedPosts = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+const toggleLike = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const likeRepository = getRepository(Like);
+  const postRepository = getRepository(Post);
+  const { id: postId } = req.params;
+  const userId = req.user?.id; // 인증된 사용자 ID
+
+  try {
+    // 게시글 존재 여부 확인
+    const post = await postRepository.findOne(postId);
+    if (!post) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+
+    // 좋아요 상태 확인
+    const existingLike = await likeRepository.findOne({
+      where: { post: { id: Number(postId) }, user: { id: userId } },
+    });
+
+    if (existingLike) {
+      // 이미 좋아요를 눌렀다면 삭제
+      await likeRepository.remove(existingLike);
+      res.status(200).json({ message: "Like removed" });
+    } else {
+      // 좋아요 추가
+      const newLike = likeRepository.create({
+        post,
+        user: { id: userId }, // 사용자 관계 설정
+      });
+      await likeRepository.save(newLike);
+      res.status(201).json({ message: "Like added" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 export {
   createPost,
   getAllPosts,
@@ -255,4 +296,5 @@ export {
   updatePost,
   deletePost,
   getLikedPosts,
+  toggleLike,
 };

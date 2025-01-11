@@ -4,6 +4,7 @@ import {
   deletePost,
   getAllPosts,
   getPostById,
+  toggleLike,
   updatePost,
 } from "../controllers/postController";
 import authMiddleware from "../middlewares/authMiddleware";
@@ -34,4 +35,7 @@ router.post("/:id/comments", authMiddleware, addComment);
 
 // 특정 게시글의 모든 댓글 조회
 router.get("/:id/comments", getCommentsByPost);
+
+// 게시글 좋아요 토글
+router.post("/:id/like", authMiddleware, toggleLike);
 export default router;
