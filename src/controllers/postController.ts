@@ -46,11 +46,12 @@ const getAllPosts = async (
   const postRepository = getRepository(Post);
 
   try {
-    // 게시글과 작성자 정보를 가져오면서 각 게시글의 댓글 수를 계산
+    // 게시글과 작성자 정보를 가져오면서 각 게시글의 댓글 수와 좋아요 수를 계산
     const posts = await postRepository
       .createQueryBuilder("post")
-      .leftJoinAndSelect("post.author", "author")
-      .leftJoin("post.comments", "comment")
+      .leftJoinAndSelect("post.author", "author") // 작성자 조인
+      .leftJoin("post.comments", "comment") // 댓글 조인
+      .leftJoin("post.likes", "like") // 좋아요 조인
       .select([
         "post.id",
         "post.title",
@@ -60,25 +61,26 @@ const getAllPosts = async (
         "author.id",
         "author.username",
       ])
-      .addSelect("COUNT(comment.id)", "comments") // 댓글 수 계산
+      .addSelect("COUNT(DISTINCT comment.id)", "comments") // 댓글 수 계산
+      .addSelect("COUNT(DISTINCT like.id)", "likes") // 좋아요 수 계산
       .groupBy("post.id")
       .addGroupBy("author.id")
       .orderBy("post.created_at", "DESC")
       .getRawAndEntities();
 
-    // Raw 데이터를 사용하여 댓글 수를 각 게시글에 매핑
-    const postsWithCommentCount = posts.entities.map((post, index) => ({
+    // Raw 데이터를 사용하여 댓글 수와 좋아요 수를 각 게시글에 매핑
+    const postsWithCommentAndLikeCount = posts.entities.map((post, index) => ({
       ...post,
       comments: Number(posts.raw[index]["comments"]), // 문자열을 숫자로 변환
+      likes: Number(posts.raw[index]["likes"]), // 문자열을 숫자로 변환
     }));
 
-    res.status(200).json(postsWithCommentCount);
+    res.status(200).json(postsWithCommentAndLikeCount);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 // 특정 게시글 조회 컨트롤러
 const getPostById = async (
   req: AuthRequest,
