@@ -5,6 +5,7 @@ import { Post } from "./entities/Post";
 import { User } from "./entities/User"; // User 엔티티가 있다면 추가
 import dotenv from "dotenv";
 import { Comment } from "./entities/Comment";
+import { Like } from "./entities/Like";
 
 // .env 파일 로드
 dotenv.config();
@@ -15,7 +16,7 @@ const connectionOptions: ConnectionOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [User, Post, Comment],
+  entities: [User, Post, Comment, Like],
   migrations: [__dirname + "/migrations/*.ts"],
   cli: {
     migrationsDir: "src/migrations",
