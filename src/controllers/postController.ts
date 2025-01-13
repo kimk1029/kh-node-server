@@ -122,9 +122,17 @@ const getPostById = async (
     const likeCount = await likeRepository.count({
       where: { post: { id: Number(id) } },
     });
+    const userId = req.user?.id;
 
+    let liked = false;
+    if (userId) {
+      const userLike = await likeRepository.findOne({
+        where: { post: { id: Number(id) }, user: { id: Number(userId) } },
+      });
+      liked = !!userLike;
+    }
     // 게시글 데이터와 추가 데이터 반환
-    res.status(200).json({ ...post, commentCount, likeCount });
+    res.status(200).json({ ...post, commentCount, likeCount, liked });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
