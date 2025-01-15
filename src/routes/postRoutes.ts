@@ -22,7 +22,7 @@ router.post("/", authMiddleware, createPost);
 router.get("/", getAllPosts);
 
 // 특정 게시글 조회
-router.get("/:id", getPostById);
+router.get("/:id", authMiddleware, getPostById);
 
 // 게시글 수정 (인증 필요)
 router.put("/:id", authMiddleware, updatePost);
