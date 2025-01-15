@@ -124,7 +124,7 @@ const getPostById = async (
     });
     const userId = req.user?.id;
     console.log("userId", userId);
-    console.log("req.user", req);
+    console.log("req.user", req.params);
     let liked = false;
     if (userId) {
       const userLike = await likeRepository.findOne({
