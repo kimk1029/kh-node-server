@@ -16,6 +16,10 @@ const authMiddleware = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (req.method === "GET") {
+      next();
+      return;
+    }
     res.status(401).json({ message: "Unauthorized:: No token" });
     return;
   }
