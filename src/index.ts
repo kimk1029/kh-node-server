@@ -14,7 +14,7 @@ const connectionOptions = require("./typeorm.config"); // CommonJS 방식으로 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 50000;
+const PORT = process.env.PORT || 80;
 
 // Middleware
 app.use(cors());
