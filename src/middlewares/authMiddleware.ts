@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { getRepository } from "typeorm";
 import { User } from "../entities/User";
+import { isPublicRoute } from "./isPublicRoute";
 
 // Extend the Express Request interface to include a user property
 export interface AuthRequest extends Request {
@@ -14,9 +15,10 @@ const authMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   const authHeader = req.headers.authorization;
+  const path = req.path;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    if (req.method === "GET") {
+    if (isPublicRoute(path)) {
       next();
       return;
     }
