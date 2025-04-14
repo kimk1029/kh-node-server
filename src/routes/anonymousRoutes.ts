@@ -30,15 +30,15 @@ const commentLimiter = rateLimit({
 });
 
 // 게시글 라우트
-router.post("/posts", postLimiter, createPost);
-router.get("/posts", getAllPosts);
-router.get("/posts/:id", getPostById);
-router.put("/posts/:id", postLimiter, updatePost);
-router.delete("/posts/:id", postLimiter, deletePost);
-router.post("/posts/:id/like", toggleLike);
+router.post("/", postLimiter, createPost);
+router.get("/", getAllPosts);
+router.get("/:id", getPostById);
+router.put("/:id", postLimiter, updatePost);
+router.delete("/:id", postLimiter, deletePost);
+router.post("/:id/like", toggleLike);
 
 // 댓글 라우트
-router.post("/posts/:postId/comments", commentLimiter, createComment);
+router.post("/:postId/comments", commentLimiter, createComment);
 router.put("/comments/:id", commentLimiter, updateComment);
 router.delete("/comments/:id", commentLimiter, deleteComment);
 
