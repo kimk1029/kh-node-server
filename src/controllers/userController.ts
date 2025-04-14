@@ -5,7 +5,7 @@ import { getRepository } from "typeorm";
 import { User } from "../entities/User";
 import { Post } from "../entities/Post";
 import { Comment } from "../entities/Comment";
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middleware/authMiddleware";
 
 // 모든 사용자 조회 컨트롤러 (기존)
 const getAllUsers = async (
@@ -47,7 +47,7 @@ const getMyAccount = async (
         return;
       }
     } else if (req.user) {
-      userId = req.user.id;
+      userId = Number(req.user.id);
     } else {
       // id도 없고 req.user도 없다면 → 인증/식별 불가
       res.status(401).json({ message: "Unauthorized" });

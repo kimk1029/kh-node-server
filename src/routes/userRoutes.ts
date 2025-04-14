@@ -7,8 +7,8 @@ import {
   getUserById,
   updateMyAccount,
 } from "../controllers/userController";
-import authMiddleware from "../middlewares/authMiddleware";
-// import authMiddleware from "../middlewares/authMiddleware"; // 인증 미들웨어 제거
+import authMiddleware from "../middleware/authMiddleware";
+// import authMiddleware from "../middleware/authMiddleware"; // 인증 미들웨어 제거
 
 const router = Router();
 

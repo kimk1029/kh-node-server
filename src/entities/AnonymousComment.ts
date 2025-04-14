@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  UpdateDateColumn,
   JoinColumn,
   OneToMany,
 } from "typeorm";
@@ -11,26 +12,29 @@ import { AnonymousPost } from "./AnonymousPost";
 
 @Entity()
 export class AnonymousComment {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  @Column("text")
+  @Column()
   content!: string;
 
+  @Column()
+  password!: string;
+
+  @ManyToOne(() => AnonymousPost, post => post.comments)
+  post!: AnonymousPost;
+
   @CreateDateColumn()
-  created_at!: Date;
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @Column()
   anonymousNickname!: string;
 
   @Column()
-  password!: string; // 댓글 수정/삭제를 위한 비밀번호
-
-  @Column()
   ipAddress!: string;
-
-  @ManyToOne(() => AnonymousPost, (post) => post.comments, { onDelete: "CASCADE" })
-  post!: AnonymousPost;
 
   @ManyToOne(() => AnonymousComment, (comment) => comment.replies, {
     nullable: true,

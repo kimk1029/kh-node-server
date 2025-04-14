@@ -7,7 +7,7 @@ import {
   toggleLike,
   updatePost,
 } from "../controllers/postController";
-import authMiddleware from "../middlewares/authMiddleware";
+import authMiddleware from "../middleware/authMiddleware";
 import {
   addComment,
   getCommentsByPost,

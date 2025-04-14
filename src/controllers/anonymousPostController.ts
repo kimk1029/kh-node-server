@@ -7,12 +7,12 @@ import bcrypt from "bcrypt";
 import { Request } from "express";
 
 // 게시글 작성
-const createPost = async (
+const createAnonymousPost = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousPostRepository = getRepository(AnonymousPost);
   const { title, content, anonymousNickname, password } = req.body;
 
   if (!title || !content || !anonymousNickname || !password) {
@@ -22,7 +22,7 @@ const createPost = async (
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const post = postRepository.create({
+    const anonymousPost = anonymousPostRepository.create({
       title,
       content,
       anonymousNickname,
@@ -30,8 +30,8 @@ const createPost = async (
       ipAddress: req.ip
     });
 
-    await postRepository.save(post);
-    res.status(201).json(post);
+    await anonymousPostRepository.save(anonymousPost);
+    res.status(201).json(anonymousPost);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 에러" });
@@ -39,39 +39,39 @@ const createPost = async (
 };
 
 // 게시글 목록 조회
-const getAllPosts = async (
+const getAllAnonymousPosts = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousPostRepository = getRepository(AnonymousPost);
 
   try {
-    const posts = await postRepository
-      .createQueryBuilder("post")
-      .leftJoin("post.comments", "comment")
-      .leftJoin("post.likes", "like")
+    const anonymousPosts = await anonymousPostRepository
+      .createQueryBuilder("anonymousPost")
+      .leftJoin("anonymousPost.comments", "anonymousComment")
+      .leftJoin("anonymousPost.likes", "anonymousLike")
       .select([
-        "post.id",
-        "post.title",
-        "post.content",
-        "post.created_at",
-        "post.views",
-        "post.anonymousNickname",
+        "anonymousPost.id",
+        "anonymousPost.title",
+        "anonymousPost.content",
+        "anonymousPost.created_at",
+        "anonymousPost.views",
+        "anonymousPost.anonymousNickname",
       ])
-      .addSelect("COUNT(DISTINCT comment.id)", "comments")
-      .addSelect("COUNT(DISTINCT like.id)", "likes")
-      .groupBy("post.id")
-      .orderBy("post.created_at", "DESC")
+      .addSelect("COUNT(DISTINCT anonymousComment.id)", "comments")
+      .addSelect("COUNT(DISTINCT anonymousLike.id)", "likes")
+      .groupBy("anonymousPost.id")
+      .orderBy("anonymousPost.created_at", "DESC")
       .getRawAndEntities();
 
-    const postsWithCounts = posts.entities.map((post, index) => ({
-      ...post,
-      comments: Number(posts.raw[index]["comments"]),
-      likes: Number(posts.raw[index]["likes"]),
+    const anonymousPostsWithCounts = anonymousPosts.entities.map((anonymousPost, index) => ({
+      ...anonymousPost,
+      comments: Number(anonymousPosts.raw[index]["comments"]),
+      likes: Number(anonymousPosts.raw[index]["likes"]),
     }));
 
-    res.status(200).json(postsWithCounts);
+    res.status(200).json(anonymousPostsWithCounts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 에러" });
@@ -79,34 +79,34 @@ const getAllPosts = async (
 };
 
 // 게시글 상세 조회
-const getPostById = async (
+const getAnonymousPostById = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousPostRepository = getRepository(AnonymousPost);
   const { id } = req.params;
 
   try {
     // 조회수 증가
-    await postRepository
+    await anonymousPostRepository
       .createQueryBuilder()
       .update(AnonymousPost)
       .set({ views: () => "views + 1" })
       .where("id = :id", { id: Number(id) })
       .execute();
 
-    const post = await postRepository.findOne({
+    const anonymousPost = await anonymousPostRepository.findOne({
       where: { id: Number(id) },
       relations: ["comments", "comments.replies"],
     });
 
-    if (!post) {
+    if (!anonymousPost) {
       res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
       return;
     }
 
-    res.status(200).json(post);
+    res.status(200).json(anonymousPost);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 에러" });
@@ -114,12 +114,12 @@ const getPostById = async (
 };
 
 // 게시글 수정
-const updatePost = async (
+const updateAnonymousPost = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousPostRepository = getRepository(AnonymousPost);
   const { id } = req.params;
   const { title, content, password } = req.body;
 
@@ -129,26 +129,26 @@ const updatePost = async (
   }
 
   try {
-    const post = await postRepository.findOne({
+    const anonymousPost = await anonymousPostRepository.findOne({
       where: { id: Number(id) },
     });
 
-    if (!post) {
+    if (!anonymousPost) {
       res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
       return;
     }
 
-    const isValidPassword = await bcrypt.compare(password, post.password);
+    const isValidPassword = await bcrypt.compare(password, anonymousPost.password);
     if (!isValidPassword) {
       res.status(401).json({ message: "비밀번호가 일치하지 않습니다" });
       return;
     }
 
-    post.title = title;
-    post.content = content;
-    await postRepository.save(post);
+    anonymousPost.title = title;
+    anonymousPost.content = content;
+    await anonymousPostRepository.save(anonymousPost);
 
-    res.status(200).json(post);
+    res.status(200).json(anonymousPost);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 에러" });
@@ -156,12 +156,12 @@ const updatePost = async (
 };
 
 // 게시글 삭제
-const deletePost = async (
+const deleteAnonymousPost = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousPostRepository = getRepository(AnonymousPost);
   const { id } = req.params;
   const { password } = req.body;
 
@@ -171,22 +171,22 @@ const deletePost = async (
   }
 
   try {
-    const post = await postRepository.findOne({
+    const anonymousPost = await anonymousPostRepository.findOne({
       where: { id: Number(id) },
     });
 
-    if (!post) {
+    if (!anonymousPost) {
       res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
       return;
     }
 
-    const isValidPassword = await bcrypt.compare(password, post.password);
+    const isValidPassword = await bcrypt.compare(password, anonymousPost.password);
     if (!isValidPassword) {
       res.status(401).json({ message: "비밀번호가 일치하지 않습니다" });
       return;
     }
 
-    await postRepository.remove(post);
+    await anonymousPostRepository.remove(anonymousPost);
     res.status(200).json({ message: "게시글이 삭제되었습니다" });
   } catch (error) {
     console.error(error);
@@ -195,39 +195,39 @@ const deletePost = async (
 };
 
 // 좋아요 토글
-const toggleLike = async (
+const toggleAnonymousLike = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const likeRepository = getRepository(AnonymousLike);
-  const postRepository = getRepository(AnonymousPost);
+  const anonymousLikeRepository = getRepository(AnonymousLike);
+  const anonymousPostRepository = getRepository(AnonymousPost);
   const { id } = req.params;
   const ipAddress = req.ip;
 
   try {
-    const post = await postRepository.findOne({
+    const anonymousPost = await anonymousPostRepository.findOne({
       where: { id: Number(id) },
     });
 
-    if (!post) {
+    if (!anonymousPost) {
       res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
       return;
     }
 
-    const existingLike = await likeRepository.findOne({
+    const existingAnonymousLike = await anonymousLikeRepository.findOne({
       where: { post: { id: Number(id) }, ipAddress },
     });
 
-    if (existingLike) {
-      await likeRepository.remove(existingLike);
+    if (existingAnonymousLike) {
+      await anonymousLikeRepository.remove(existingAnonymousLike);
       res.status(200).json({ message: "좋아요가 취소되었습니다" });
     } else {
-      const newLike = likeRepository.create({
-        post,
+      const newAnonymousLike = anonymousLikeRepository.create({
+        post: anonymousPost,
         ipAddress,
       });
-      await likeRepository.save(newLike);
+      await anonymousLikeRepository.save(newAnonymousLike);
       res.status(201).json({ message: "좋아요가 추가되었습니다" });
     }
   } catch (error) {
@@ -237,10 +237,10 @@ const toggleLike = async (
 };
 
 export {
-  createPost,
-  getAllPosts,
-  getPostById,
-  updatePost,
-  deletePost,
-  toggleLike,
+  createAnonymousPost,
+  getAllAnonymousPosts,
+  getAnonymousPostById,
+  updateAnonymousPost,
+  deleteAnonymousPost,
+  toggleAnonymousLike,
 }; 

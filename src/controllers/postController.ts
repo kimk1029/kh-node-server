@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
 import { Post } from "../entities/Post";
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middleware/authMiddleware";
 import { Like } from "../entities/Like";
 import { Comment } from "../entities/Comment";
 // 게시글 작성 컨트롤러
@@ -26,7 +26,7 @@ const createPost = async (
     const post = postRepository.create({
       title,
       content,
-      author: req.user,
+      author: { id: Number(req.user.id) }
     });
 
     await postRepository.save(post);
@@ -170,7 +170,7 @@ const updatePost = async (
     }
 
     // 현재 사용자가 게시글 작성자인지 확인
-    if (post.author.id !== req.user.id) {
+    if (post.author.id !== Number(req.user.id)) {
       res
         .status(403)
         .json({ message: "Forbidden: You can only edit your own posts" });
@@ -215,7 +215,7 @@ const deletePost = async (
     }
 
     // 현재 사용자가 게시글 작성자인지 확인
-    if (post.author.id !== req.user.id) {
+    if (post.author.id !== Number(req.user.id)) {
       res
         .status(403)
         .json({ message: "Forbidden: You can only delete your own posts" });
@@ -278,7 +278,7 @@ const toggleLike = async (
 
     // 좋아요 상태 확인
     const existingLike = await likeRepository.findOne({
-      where: { post: { id: Number(postId) }, user: { id: userId } },
+      where: { post: { id: Number(postId) }, user: { id: Number(userId) } },
     });
 
     if (existingLike) {
@@ -289,7 +289,7 @@ const toggleLike = async (
       // 좋아요 추가
       const newLike = likeRepository.create({
         post,
-        user: { id: userId }, // 사용자 관계 설정
+        user: { id: Number(userId) }
       });
       await likeRepository.save(newLike);
       res.status(201).json({ message: "Like added" });

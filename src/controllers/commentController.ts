@@ -3,7 +3,7 @@
 import { Response, NextFunction } from "express";
 import { getRepository } from "typeorm";
 import { Post } from "../entities/Post";
-import { AuthRequest } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middleware/authMiddleware";
 import { Comment } from "../entities/Comment";
 
 // 댓글(대댓글) 추가 컨트롤러
@@ -50,7 +50,7 @@ const addComment = async (
     // 새로운 댓글(또는 대댓글) 생성
     const comment = commentRepository.create({
       content,
-      author: req.user,
+      author: { id: Number(req.user.id) },
       post,
       parent: parentComment || null,
     });
