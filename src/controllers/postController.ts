@@ -92,7 +92,7 @@ const getPostById = async (
   const commentRepository = getRepository(Comment);
   const likeRepository = getRepository(Like); // Like 레포지토리 추가
   const { id } = req.params;
-
+  console.log("[[[[[[[[[[[[[[]]]]]]]]]]]]");
   try {
     // 조회수 1 증가
     await postRepository
