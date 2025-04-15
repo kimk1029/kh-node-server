@@ -13,20 +13,17 @@ const createAnonymousPost = async (
   next: NextFunction
 ): Promise<void> => {
   const anonymousPostRepository = getRepository(AnonymousPost);
-  const { title, content, anonymousNickname, password } = req.body;
+  const { title, content } = req.body;
 
-  if (!title || !content || !anonymousNickname || !password) {
+  if (!title || !content ) {
     res.status(400).json({ message: "모든 필드를 입력해주세요" });
     return;
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
     const anonymousPost = anonymousPostRepository.create({
       title,
       content,
-      anonymousNickname,
-      password: hashedPassword,
       ipAddress: req.ip
     });
 
