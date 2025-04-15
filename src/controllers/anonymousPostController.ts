@@ -35,27 +35,27 @@ export const createAnonymousPost = async (req: Request, res: Response) => {
 export const getAllAnonymousPosts = async (req: Request, res: Response) => {
   try {
     const postRepository = getRepository(AnonymousPost);
-    const anonymous = await postRepository
-      .createQueryBuilder("anonymous")
-      .leftJoin("anonymous.comments", "comment")
-      .leftJoin("anonymous.likes", "like")
+    const posts = await postRepository
+      .createQueryBuilder("post")
+      .leftJoinAndSelect("post.comments", "comment")
+      .leftJoinAndSelect("post.likes", "like")
       .select([
-        "anonymous.id",
-        "anonymous.title",
-        "anonymous.content",
-        "anonymous.created_at",
-        "anonymous.views",
+        "post.id",
+        "post.title",
+        "post.content",
+        "post.created_at",
+        "post.views",
       ])
       .addSelect("COUNT(DISTINCT comment.id)", "comments")
       .addSelect("COUNT(DISTINCT like.id)", "likes")
-      .groupBy("anonymous.id")
-      .orderBy("anonymous.created_at", "DESC")
+      .groupBy("post.id")
+      .orderBy("post.created_at", "DESC")
       .getRawAndEntities();
 
-    const postsWithCounts = anonymous.entities.map((post, index) => ({
+    const postsWithCounts = posts.entities.map((post, index) => ({
       ...post,
-      comments: Number(anonymous.raw[index].comments),
-      likes: Number(anonymous.raw[index].likes),
+      comments: Number(posts.raw[index].comments) || 0,
+      likes: Number(posts.raw[index].likes) || 0,
     }));
 
     res.json(postsWithCounts);
