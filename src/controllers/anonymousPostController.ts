@@ -24,7 +24,6 @@ const createAnonymousPost = async (
     const anonymousPost = anonymousPostRepository.create({
       title,
       content,
-      ipAddress: req.ip
     });
 
     await anonymousPostRepository.save(anonymousPost);
