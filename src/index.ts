@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
 import userRoutes from "./routes/userRoutes";
+import anonymousRoutes from "./routes/anonymousRoutes";
 
 const connectionOptions = require("./typeorm.config"); // CommonJS 방식으로 임포트
 dotenv.config();
@@ -31,6 +32,7 @@ createConnection(connectionOptions)
     app.use("/api/auth", authRoutes);
     app.use("/api/posts", postRoutes);
     app.use("/api/users", userRoutes);
+    app.use("/api/anonymous", anonymousRoutes);
 
     // HTTP and WebSocket Server
     const server = http.createServer(app);
