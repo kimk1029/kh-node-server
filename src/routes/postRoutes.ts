@@ -19,7 +19,7 @@ const router = Router();
 router.post("/", authMiddleware, createPost);
 
 // 게시글 목록 조회
-// router.get("/", getAllPosts);
+router.get("/", getAllPosts);
 
 // 특정 게시글 조회
 router.get("/:id", authMiddleware, getPostById);
@@ -38,10 +38,5 @@ router.get("/:id/comments", getCommentsByPost);
 
 // 게시글 좋아요 토글
 router.post("/:id/like", authMiddleware, toggleLike);
-
-// GET 요청 테스트 응답
-router.get("/", (req, res) => {
-  res.json({ message: "hello posts" });
-});
 
 export default router;

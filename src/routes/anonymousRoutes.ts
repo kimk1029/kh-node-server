@@ -15,23 +15,28 @@ import { postLimiter, commentLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
-// GET 요청 테스트 응답
-router.get("/", (req, res) => {
-  res.json({ message: "hello" });
-});
+// 게시글 작성
+router.post("/", createAnonymousPost);
 
-router.get("/:id", (req, res) => {
-  res.json({ message: `hello ${req.params.id}` });
-});
+// 게시글 목록 조회
+router.get("/", getAllAnonymousPosts);
 
-// POST, PUT, DELETE 요청 라우트
-router.post("/", postLimiter, createAnonymousPost);
+// 특정 게시글 조회
+router.get("/:id", getAnonymousPostById);
+
+// 게시글 수정
 router.put("/:id", updateAnonymousPost);
-router.delete("/:id", deleteAnonymousPost);
-router.post("/:id/like", toggleAnonymousLike);
 
-// 댓글 관련 라우트
-router.post("/:postId/comments", commentLimiter, addAnonymousComment);
+// 게시글 삭제
+router.delete("/:id", deleteAnonymousPost);
+
+// 댓글 추가
+router.post("/:id/comments", addAnonymousComment);
+
+// 특정 게시글의 모든 댓글 조회
 router.get("/:id/comments", getAnonymousCommentsByPost);
+
+// 게시글 좋아요 토글
+router.post("/:id/like", toggleAnonymousLike);
 
 export default router; 
