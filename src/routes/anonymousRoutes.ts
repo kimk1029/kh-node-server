@@ -1,4 +1,4 @@
-import express from "express";
+import {Router} from "express";
 import {
   createAnonymousPost,
   getAllAnonymousPosts,
@@ -14,7 +14,7 @@ import {
 } from "../controllers/anonymousCommentController";
 import { postLimiter, commentLimiter } from "../middleware/rateLimit";
 
-const router = express.Router();
+const router = Router();
 
 // 게시글 관련 라우트
 router.post("/", postLimiter, createAnonymousPost);

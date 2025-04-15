@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   OneToMany,
 } from "typeorm";
+import { AnonymousComment } from "./AnonymousComment";
+import { AnonymousLike } from "./AnonymousLike";
 
 @Entity()
 export class AnonymousPost {
@@ -32,9 +34,9 @@ export class AnonymousPost {
   @Column()
   ipAddress!: string;
 
-  @OneToMany("AnonymousComment", "post", { cascade: true })
-  comments!: any[];
+  @OneToMany(() => AnonymousComment, (comment) => comment?.post, { cascade: true })
+  comments!: AnonymousComment[];
 
-  @OneToMany("AnonymousLike", "post")
+  @OneToMany(() => AnonymousLike, (like) => like.post)
   likes!: any[];
 } 
