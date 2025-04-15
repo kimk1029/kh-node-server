@@ -1,4 +1,4 @@
-import {Router} from "express";
+import express from "express";
 import {
   createAnonymousPost,
   getAllAnonymousPosts,
@@ -14,12 +14,19 @@ import {
 } from "../controllers/anonymousCommentController";
 import { postLimiter, commentLimiter } from "../middleware/rateLimit";
 
-const router = Router();
+const router = express.Router();
 
-// 게시글 관련 라우트
+// GET 요청 테스트 응답
+router.get("/", (req, res) => {
+  res.json({ message: "hello" });
+});
+
+router.get("/:id", (req, res) => {
+  res.json({ message: `hello ${req.params.id}` });
+});
+
+// POST, PUT, DELETE 요청 라우트
 router.post("/", postLimiter, createAnonymousPost);
-router.get("/", getAllAnonymousPosts);
-router.get("/:id", getAnonymousPostById);
 router.put("/:id", updateAnonymousPost);
 router.delete("/:id", deleteAnonymousPost);
 router.post("/:id/like", toggleAnonymousLike);
