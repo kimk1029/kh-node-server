@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   OneToMany,
 } from "typeorm";
 import { AnonymousComment } from "./AnonymousComment";
@@ -19,24 +20,25 @@ export class AnonymousPost {
   @Column("text")
   content!: string;
 
-  @CreateDateColumn()
-  created_at!: Date;
+  @Column()
+  ipAddress!: string;
 
   @Column({ default: 0 })
   views!: number;
 
-  @Column()
-  anonymousNickname!: string;
+  @CreateDateColumn()
+  created_at!: Date;
 
-  @Column()
-  password!: string; // 게시글 수정/삭제를 위한 비밀번호
+  @UpdateDateColumn()
+  updated_at!: Date;
 
-  @Column()
-  ipAddress!: string;
-
-  @OneToMany(() => AnonymousComment, (comment) => comment?.post, { cascade: true })
+  @OneToMany(() => AnonymousComment, (comment) => comment.post, {
+    cascade: true,
+  })
   comments!: AnonymousComment[];
 
-  @OneToMany(() => AnonymousLike, (like) => like.post)
-  likes!: any[];
+  @OneToMany(() => AnonymousLike, (like) => like.post, {
+    cascade: true,
+  })
+  likes!: AnonymousLike[];
 } 
