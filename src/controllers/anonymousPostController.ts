@@ -37,8 +37,8 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
     const postRepository = getRepository(AnonymousPost);
     const posts = await postRepository
       .createQueryBuilder("post")
-      .leftJoinAndSelect("post.comments", "comment")
-      .leftJoinAndSelect("post.likes", "like")
+      .leftJoin("post.comments", "comment")
+      .leftJoin("post.likes", "like")
       .select([
         "post.id",
         "post.title",
@@ -49,6 +49,10 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
       .addSelect("COUNT(DISTINCT comment.id)", "comments")
       .addSelect("COUNT(DISTINCT like.id)", "likes")
       .groupBy("post.id")
+      .addGroupBy("post.title")
+      .addGroupBy("post.content")
+      .addGroupBy("post.created_at")
+      .addGroupBy("post.views")
       .orderBy("post.created_at", "DESC")
       .getRawAndEntities();
 
