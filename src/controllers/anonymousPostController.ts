@@ -31,38 +31,43 @@ export const createAnonymousPost = async (req: Request, res: Response) => {
   }
 };
 
-// 게시글 목록 조회
+// 게시글 목록 조회 (수정 버전)
 export const getAllAnonymousPosts = async (req: Request, res: Response) => {
   try {
     const postRepository = getRepository(AnonymousPost);
-    const posts = await postRepository
+
+    // 1) author join 제거
+    // 2) alias 명을 commentCount, likeCount로 통일
+    // 3) getRawMany() 사용으로 매핑 간소화
+    const rawPosts = await postRepository
       .createQueryBuilder("post")
-      .leftJoinAndSelect("post.author", "author") // 작성자 조인
-      .leftJoin("post.comments", "comment") // 댓글 조인
-      .leftJoin("post.likes", "like") // 좋아요 조인
+      .leftJoin("post.comments", "comment")
+      .leftJoin("post.likes", "like")
       .select([
         "post.id",
         "post.title",
         "post.content",
         "post.created_at",
         "post.views",
-        "author.id",
-        "author.username",
       ])
-      .addSelect("COUNT(DISTINCT comment.id)", "comments") // 댓글 수 계산
-      .addSelect("COUNT(DISTINCT like.id)", "likes") // 좋아요 수 계산
+      .addSelect("COUNT(DISTINCT comment.id)", "commentCount")
+      .addSelect("COUNT(DISTINCT like.id)", "likeCount")
       .groupBy("post.id")
-      .addGroupBy("author.id")
       .orderBy("post.created_at", "DESC")
-      .getRawAndEntities();
-      console.log(posts)
-    const postsWithCounts = posts.entities.map((post, index) => ({
-      ...post,
-      comments: Number(posts.raw[index].commentCount) || 0,
-      likes: Number(posts.raw[index].likeCount) || 0
+      .getRawMany();
+console.log(rawPosts)
+    // raw 결과 매핑
+    const posts = rawPosts.map((row) => ({
+      id: row.post_id,
+      title: row.post_title,
+      content: row.post_content,
+      created_at: row.post_created_at,
+      views: row.post_views,
+      comments: Number(row.commentCount),
+      likes: Number(row.likeCount),
     }));
 
-    res.json(postsWithCounts);
+    res.json(posts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
