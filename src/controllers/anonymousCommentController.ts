@@ -18,10 +18,8 @@ const createAnonymousComment = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const comment = commentRepository.create({
       content,
-      password: hashedPassword,
       post
     });
 
@@ -45,10 +43,6 @@ const updateAnonymousComment = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
     }
 
-    const isValidPassword = await bcrypt.compare(password, comment.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
-    }
 
     comment.content = content;
     await commentRepository.save(comment);
@@ -71,10 +65,6 @@ const deleteAnonymousComment = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
     }
 
-    const isValidPassword = await bcrypt.compare(password, comment.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
-    }
 
     await commentRepository.remove(comment);
     res.status(204).send();
@@ -102,7 +92,6 @@ export const addAnonymousComment = async (req: Request, res: Response) => {
     const commentRepository = getRepository(AnonymousComment);
     const comment = commentRepository.create({
       content,
-      password,
       post,
     });
 

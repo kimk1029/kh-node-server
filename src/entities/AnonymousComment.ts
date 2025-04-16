@@ -18,9 +18,6 @@ export class AnonymousComment {
   @Column()
   content!: string;
 
-  @Column()
-  password!: string;
-
   @ManyToOne(() => AnonymousPost, post => post.comments)
   post!: AnonymousPost;
 
@@ -30,8 +27,6 @@ export class AnonymousComment {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column()
-  anonymousNickname!: string;
 
   @Column()
   ipAddress!: string;

@@ -46,23 +46,27 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
         "post.created_at",
         "post.views",
       ])
-      .addSelect("COUNT(DISTINCT comment.id)", "comments")
-      .addSelect("COUNT(DISTINCT like.id)", "likes")
+      .addSelect("COUNT(DISTINCT comment.id)", "commentCount")
+      .addSelect("COUNT(DISTINCT like.id)", "likeCount")
       .groupBy("post.id")
       .addGroupBy("post.title")
       .addGroupBy("post.content")
       .addGroupBy("post.created_at")
       .addGroupBy("post.views")
       .orderBy("post.created_at", "DESC")
-      .getRawAndEntities();
+      .getRawMany();
 
-    const postsWithCounts = posts.entities.map((post, index) => ({
-      ...post,
-      comments: Number(posts.raw[index].comments) || 0,
-      likes: Number(posts.raw[index].likes) || 0,
+    const formattedPosts = posts.map(post => ({
+      id: post.post_id,
+      title: post.post_title,
+      content: post.post_content,
+      created_at: post.post_created_at,
+      views: post.post_views,
+      comments: Number(post.commentCount) || 0,
+      likes: Number(post.likeCount) || 0
     }));
 
-    res.json(postsWithCounts);
+    res.json(formattedPosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
