@@ -37,22 +37,22 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
     const postRepository = getRepository(AnonymousPost);
     const posts = await postRepository
       .createQueryBuilder("post")
-      .leftJoinAndMapMany("post.comments", "post.comments", "comment")
-      .leftJoinAndMapMany("post.likes", "post.likes", "like")
+      .leftJoinAndSelect("post.author", "author") // 작성자 조인
+      .leftJoin("post.comments", "comment") // 댓글 조인
+      .leftJoin("post.likes", "like") // 좋아요 조인
       .select([
         "post.id",
         "post.title",
         "post.content",
         "post.created_at",
         "post.views",
+        "author.id",
+        "author.username",
       ])
-      .addSelect("COUNT(DISTINCT comment.id)", "commentCount")
-      .addSelect("COUNT(DISTINCT like.id)", "likeCount")
+      .addSelect("COUNT(DISTINCT comment.id)", "comments") // 댓글 수 계산
+      .addSelect("COUNT(DISTINCT like.id)", "likes") // 좋아요 수 계산
       .groupBy("post.id")
-      .addGroupBy("post.title")
-      .addGroupBy("post.content")
-      .addGroupBy("post.created_at")
-      .addGroupBy("post.views")
+      .addGroupBy("author.id")
       .orderBy("post.created_at", "DESC")
       .getRawAndEntities();
       console.log(posts)
