@@ -37,8 +37,8 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
     const postRepository = getRepository(AnonymousPost);
     const posts = await postRepository
       .createQueryBuilder("post")
-      .leftJoin("post.comments", "comment")
-      .leftJoin("post.likes", "like")
+      .leftJoinAndMapMany("post.comments", "post.comments", "comment")
+      .leftJoinAndMapMany("post.likes", "post.likes", "like")
       .select([
         "post.id",
         "post.title",
@@ -54,19 +54,15 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
       .addGroupBy("post.created_at")
       .addGroupBy("post.views")
       .orderBy("post.created_at", "DESC")
-      .getRawMany();
-
-    const formattedPosts = posts.map(post => ({
-      id: post.post_id,
-      title: post.post_title,
-      content: post.post_content,
-      created_at: post.post_created_at,
-      views: post.post_views,
-      comments: Number(post.commentCount) || 0,
-      likes: Number(post.likeCount) || 0
+      .getRawAndEntities();
+      console.log(posts.entities)
+    const postsWithCounts = posts.entities.map((post, index) => ({
+      ...post,
+      comments: Number(posts.raw[index].commentCount) || 0,
+      likes: Number(posts.raw[index].likeCount) || 0
     }));
 
-    res.json(formattedPosts);
+    res.json(postsWithCounts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
