@@ -36,38 +36,26 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
   try {
     const postRepository = getRepository(AnonymousPost);
 
-    // 1) author join 제거
-    // 2) alias 명을 commentCount, likeCount로 통일
-    // 3) getRawMany() 사용으로 매핑 간소화
-    const rawPosts = await postRepository
+    const posts = await postRepository
       .createQueryBuilder("post")
-      .leftJoin("post.comments", "comment")
-      .leftJoin("post.likes", "like")
-      .select([
-        "post.id",
-        "post.title",
-        "post.content",
-        "post.created_at",
-        "post.views",
-      ])
-      .addSelect("COUNT(DISTINCT comment.id)", "commentCount")
-      .addSelect("COUNT(DISTINCT like.id)", "likeCount")
-      .groupBy("post.id")
+      // post.comments.length → .commentsCount 로 매핑
+      .loadRelationCountAndMap("post.commentsCount", "post.comments")
+      .loadRelationCountAndMap("post.likesCount",    "post.likes")
       .orderBy("post.created_at", "DESC")
-      .getRawMany();
-console.log(rawPosts)
-    // raw 결과 매핑
-    const posts = rawPosts.map((row) => ({
-      id: row.post_id,
-      title: row.post_title,
-      content: row.post_content,
-      created_at: row.post_created_at,
-      views: row.post_views,
-      comments: Number(row.commentCount),
-      likes: Number(row.likeCount),
-    }));
+      .getMany();
 
-    res.json(posts);
+    // getMany() 로 가져온 엔티티(post)에 commentsCount, likesCount 프로퍼티 자동 추가
+    res.json(
+      posts.map((post) => ({
+        id:          post.id,
+        title:       post.title,
+        content:     post.content,
+        created_at:  post.created_at,
+        views:       post.views,
+        comments:    post.comments,
+        likes:       post.likes,
+      }))
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
