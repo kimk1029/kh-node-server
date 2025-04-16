@@ -36,12 +36,32 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
     const postRepository = getRepository(AnonymousPost);
     const posts = await postRepository
       .createQueryBuilder("post")
-      .loadRelationCountAndMap("post.commentsCount", "post.comments")
-      .loadRelationCountAndMap("post.likesCount", "post.likes")
+      .leftJoinAndSelect("post.comments", "comments")
+      .leftJoinAndSelect("post.likes", "likes")
+      .select([
+        "post.id",
+        "post.title",
+        "post.content",
+        "post.created_at",
+        "post.views",
+        "COUNT(DISTINCT comments.id) as commentsCount",
+        "COUNT(DISTINCT likes.id) as likesCount"
+      ])
+      .groupBy("post.id")
       .orderBy("post.created_at", "DESC")
-      .getMany();
+      .getRawMany();
 
-    res.json(posts);
+    const formattedPosts = posts.map(post => ({
+      id: post.post_id,
+      title: post.post_title,
+      content: post.post_content,
+      created_at: post.post_created_at,
+      views: post.post_views,
+      comments: Number(post.commentsCount) || 0,
+      likes: Number(post.likesCount) || 0
+    }));
+
+    res.json(formattedPosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
@@ -55,9 +75,12 @@ export const getAnonymousPostById = async (req: Request, res: Response) => {
     const ipAddress = req.ip || req.connection.remoteAddress;
 
     const postRepository = getRepository(AnonymousPost);
-    const post = await postRepository.findOne(id, {
-      relations: ["comments", "likes"],
-    });
+    const post = await postRepository
+      .createQueryBuilder("post")
+      .leftJoinAndSelect("post.comments", "comments")
+      .leftJoinAndSelect("post.likes", "likes")
+      .where("post.id = :id", { id })
+      .getOne();
 
     if (!post) {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
