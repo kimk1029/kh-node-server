@@ -1,10 +1,9 @@
-import { Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { AnonymousPost } from "../entities/AnonymousPost";
 import { AnonymousComment } from "../entities/AnonymousComment";
 import { AnonymousLike } from "../entities/AnonymousLike";
 import bcrypt from "bcrypt";
-import { Request } from "express";
 
 // 게시글 작성
 export const createAnonymousPost = async (req: Request, res: Response) => {
@@ -31,31 +30,18 @@ export const createAnonymousPost = async (req: Request, res: Response) => {
   }
 };
 
-// 게시글 목록 조회 (수정 버전)
+// 게시글 목록 조회
 export const getAllAnonymousPosts = async (req: Request, res: Response) => {
   try {
     const postRepository = getRepository(AnonymousPost);
-
     const posts = await postRepository
       .createQueryBuilder("post")
-      // post.comments.length → .commentsCount 로 매핑
       .loadRelationCountAndMap("post.commentsCount", "post.comments")
-      .loadRelationCountAndMap("post.likesCount",    "post.likes")
+      .loadRelationCountAndMap("post.likesCount", "post.likes")
       .orderBy("post.created_at", "DESC")
       .getMany();
 
-    // getMany() 로 가져온 엔티티(post)에 commentsCount, likesCount 프로퍼티 자동 추가
-    res.json(
-      posts.map((post) => ({
-        id:          post.id,
-        title:       post.title,
-        content:     post.content,
-        created_at:  post.created_at,
-        views:       post.views,
-        comments:    post.comments,
-        likes:       post.likes,
-      }))
-    );
+    res.json(posts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
