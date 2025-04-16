@@ -55,7 +55,7 @@ export const getAllAnonymousPosts = async (req: Request, res: Response) => {
       .addGroupBy("post.views")
       .orderBy("post.created_at", "DESC")
       .getRawAndEntities();
-      console.log(posts.entities)
+      console.log(posts)
     const postsWithCounts = posts.entities.map((post, index) => ({
       ...post,
       comments: Number(posts.raw[index].commentCount) || 0,
