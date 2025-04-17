@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 const createAnonymousComment = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
-    const { content, password } = req.body;
+    const { content } = req.body;
 
     const postRepository = getRepository(AnonymousPost);
     const commentRepository = getRepository(AnonymousComment);
