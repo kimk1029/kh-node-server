@@ -1,5 +1,4 @@
 import { Router } from "express";
-import multer from "multer";
 import {
   createPost,
   deletePost,
@@ -16,11 +15,8 @@ import {
 
 const router = Router();
 
-// multer 설정
-const upload = multer();
-
-// 게시글 작성 (인증 필요, FormData 처리)
-router.post("/", authMiddleware, upload.none() as any, createPost);
+// 게시글 작성 (인증 필요)
+router.post("/", authMiddleware, createPost);
 
 // 게시글 목록 조회
 router.get("/", getAllPosts);
