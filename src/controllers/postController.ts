@@ -45,14 +45,15 @@ const getAllPosts = async (
   next: NextFunction
 ): Promise<void> => {
   const postRepository = getRepository(Post);
+  const { category } = req.query; // 쿼리 파라미터에서 tag 값을 가져옴
 
   try {
-    // 게시글과 작성자 정보를 가져오면서 각 게시글의 댓글 수와 좋아요 수를 계산
-    const posts = await postRepository
+    // 쿼리 빌더 생성
+    const queryBuilder = postRepository
       .createQueryBuilder("post")
-      .leftJoinAndSelect("post.author", "author") // 작성자 조인
-      .leftJoin("post.comments", "comment") // 댓글 조인
-      .leftJoin("post.likes", "like") // 좋아요 조인
+      .leftJoinAndSelect("post.author", "author")
+      .leftJoin("post.comments", "comment")
+      .leftJoin("post.likes", "like")
       .select([
         "post.id",
         "post.title",
@@ -63,18 +64,24 @@ const getAllPosts = async (
         "author.username",
         "post.tag"
       ])
-      .addSelect("COUNT(DISTINCT comment.id)", "comments") // 댓글 수 계산
-      .addSelect("COUNT(DISTINCT like.id)", "likes") // 좋아요 수 계산
+      .addSelect("COUNT(DISTINCT comment.id)", "comments")
+      .addSelect("COUNT(DISTINCT like.id)", "likes")
       .groupBy("post.id")
       .addGroupBy("author.id")
-      .orderBy("post.created_at", "DESC")
-      .getRawAndEntities();
+      .orderBy("post.created_at", "DESC");
+
+    // tag가 있는 경우 필터링 조건 추가
+    if (category) {
+      queryBuilder.andWhere("post.tag = :tag", { category });
+    }
+
+    const posts = await queryBuilder.getRawAndEntities();
 
     // Raw 데이터를 사용하여 댓글 수와 좋아요 수를 각 게시글에 매핑
     const postsWithCommentAndLikeCount = posts.entities.map((post, index) => ({
       ...post,
-      comments: Number(posts.raw[index]["comments"]), // 문자열을 숫자로 변환
-      likes: Number(posts.raw[index]["likes"]), // 문자열을 숫자로 변환
+      comments: Number(posts.raw[index]["comments"]),
+      likes: Number(posts.raw[index]["likes"]),
       category: post.tag,
     }));
 
