@@ -37,10 +37,9 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment?.post, { cascade: true })
   comments!: Comment[];
-
   @Column({
     type: "enum",
-    enum: ["news", "tutorial", "opinion"], // 필요에 따라 enum을 별도로 정의할 수 있습니다.
+    enum: ['technology', 'science', 'health', 'business', 'entertainment', 'news'],
     default: "news",
   })
   tag!: string;

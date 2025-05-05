@@ -61,6 +61,7 @@ const getAllPosts = async (
         "post.views",
         "author.id",
         "author.username",
+        "post.tag"
       ])
       .addSelect("COUNT(DISTINCT comment.id)", "comments") // 댓글 수 계산
       .addSelect("COUNT(DISTINCT like.id)", "likes") // 좋아요 수 계산
@@ -74,6 +75,7 @@ const getAllPosts = async (
       ...post,
       comments: Number(posts.raw[index]["comments"]), // 문자열을 숫자로 변환
       likes: Number(posts.raw[index]["likes"]), // 문자열을 숫자로 변환
+      category: post.tag,
     }));
 
     res.status(200).json(postsWithCommentAndLikeCount);
