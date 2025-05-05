@@ -11,14 +11,25 @@ const createPost = async (
   next: NextFunction
 ): Promise<void> => {
   const postRepository = getRepository(Post);
-  const { title, content } = req.body;
-  if (!title || !content) {
-    res.status(400).json({ message: "Please provide title and content" });
+  const { title, content, tag } = req.body;
+
+  if (!title || !content || !tag) {
+    res.status(400).json({ message: "제목, 내용, 카테고리는 필수입니다." });
+    return;
+  }
+
+  // 유효한 카테고리 값인지 확인
+  const validTags = ['technology', 'science', 'health', 'business', 'entertainment', 'news'];
+  if (!validTags.includes(tag)) {
+    res.status(400).json({ 
+      message: "유효하지 않은 카테고리입니다.",
+      validTags 
+    });
     return;
   }
 
   if (!req.user) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "인증이 필요합니다." });
     return;
   }
 
@@ -26,6 +37,7 @@ const createPost = async (
     const post = postRepository.create({
       title,
       content,
+      tag,
       author: { id: Number(req.user.id) }
     });
 
@@ -34,7 +46,7 @@ const createPost = async (
     res.status(201).json(post);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 };
 
