@@ -10,7 +10,7 @@ import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
 import userRoutes from "./routes/userRoutes";
 import anonymousRoutes from "./routes/anonymousRoutes";
-
+import path from "path";
 const connectionOptions = require("./typeorm.config"); // CommonJS 방식으로 임포트
 dotenv.config();
 
@@ -33,7 +33,7 @@ createConnection(connectionOptions)
     app.use("/api/posts", postRoutes);
     app.use("/api/users", userRoutes);
     app.use("/api/anonymous", anonymousRoutes);
-
+    app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
     // HTTP and WebSocket Server
     const server = http.createServer(app);
     const io = new SocketIO(server, {
