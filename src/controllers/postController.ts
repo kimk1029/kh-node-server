@@ -120,9 +120,9 @@ const getPostById = async (
 ): Promise<void> => {
   const postRepository = getRepository(Post);
   const commentRepository = getRepository(Comment);
-  const likeRepository = getRepository(Like); // Like 레포지토리 추가
+  const likeRepository = getRepository(Like);
   const { id } = req.params;
-  console.log("[[[[[[[[[[[[[[]]]]]]]]]]]]");
+
   try {
     // 조회수 1 증가
     await postRepository
@@ -152,6 +152,7 @@ const getPostById = async (
     const likeCount = await likeRepository.count({
       where: { post: { id: Number(id) } },
     });
+
     const userId = req.user?.id;
     let liked = false;
     if (userId) {
@@ -160,8 +161,19 @@ const getPostById = async (
       });
       liked = !!userLike;
     }
+
+    // 이미지 URL 생성
+    const imageUrls = post.images ? post.images.map(image => `/uploads/${image}`) : [];
+
     // 게시글 데이터와 추가 데이터 반환
-    res.status(200).json({ ...post, commentCount, likeCount, liked });
+    res.status(200).json({ 
+      ...post, 
+      commentCount, 
+      likeCount, 
+      liked,
+      imageUrls,
+      category: post.tag 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
