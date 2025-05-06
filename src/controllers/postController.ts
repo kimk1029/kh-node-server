@@ -15,16 +15,16 @@ const createPost = async (
   // FormData에서 데이터 추출
   const title = req.body.title;
   const content = req.body.content;
-  const tag = req.body.tag;
+  const category = req.body.category;
 
-  if (!title || !content || !tag) {
+  if (!title || !content || !category) {
     res.status(400).json({ message: "제목, 내용, 카테고리는 필수입니다." });
     return;
   }
 
   // 유효한 카테고리 값인지 확인
   const validTags = ['technology', 'science', 'health', 'business', 'entertainment', 'news'];
-  if (!validTags.includes(tag)) {
+  if (!validTags.includes(category)) {
     res.status(400).json({ 
       message: "유효하지 않은 카테고리입니다.",
       validTags 
@@ -44,7 +44,7 @@ const createPost = async (
     const post = postRepository.create({
       title,
       content,
-      tag,
+      tag: category,
       images,
       author: { id: Number(req.user.id) }
     });
