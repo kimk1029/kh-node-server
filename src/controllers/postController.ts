@@ -38,6 +38,7 @@ const createPost = async (
   }
 
   try {
+    console.log("[[[[[[[[[[[[[[IMAGE]]]]]]]]]]]]]]",req.files);
     // 이미지 파일 경로 추출
     const images = req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [];
 
