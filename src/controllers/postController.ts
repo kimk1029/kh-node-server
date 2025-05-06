@@ -11,7 +11,11 @@ const createPost = async (
   next: NextFunction
 ): Promise<void> => {
   const postRepository = getRepository(Post);
-  const { title, content, tag } = req.body;
+  
+  // FormData에서 데이터 추출
+  const title = req.body.title;
+  const content = req.body.content;
+  const tag = req.body.tag;
 
   if (!title || !content || !tag) {
     res.status(400).json({ message: "제목, 내용, 카테고리는 필수입니다." });
@@ -34,10 +38,14 @@ const createPost = async (
   }
 
   try {
+    // 이미지 파일 경로 추출
+    const images = req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [];
+
     const post = postRepository.create({
       title,
       content,
       tag,
+      images,
       author: { id: Number(req.user.id) }
     });
 

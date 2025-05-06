@@ -44,6 +44,9 @@ export class Post {
   })
   tag!: string;
 
+  @Column("simple-array", { nullable: true })
+  images!: string[];
+
   @OneToMany(() => Like, (like) => like.post)
   likes!: Like[];
 }

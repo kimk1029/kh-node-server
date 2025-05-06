@@ -1,4 +1,6 @@
 import { Router } from "express";
+import multer from "multer";
+import path from "path";
 import {
   createPost,
   deletePost,
@@ -15,8 +17,34 @@ import {
 
 const router = Router();
 
-// 게시글 작성 (인증 필요)
-router.post("/", authMiddleware, createPost);
+// multer 설정
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('지원하지 않는 이미지 형식입니다.'));
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB 제한
+  }
+});
+
+// 게시글 작성 (인증 필요, 이미지 업로드 포함)
+router.post("/", authMiddleware, upload.array('images', 5) as any, createPost);
 
 // 게시글 목록 조회
 router.get("/", getAllPosts);
