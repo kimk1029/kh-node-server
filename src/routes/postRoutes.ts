@@ -16,7 +16,7 @@ import {
 } from "../controllers/commentController";
 
 const router = Router();
-
+console.log("[[[[[[[[[[[[[[postRoutes]]]]]]]]]]]]]]");
 // multer 설정
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
