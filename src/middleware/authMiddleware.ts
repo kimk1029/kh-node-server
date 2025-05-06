@@ -24,7 +24,7 @@ const authMiddleware = async (
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: string;
     };
-
+    console.log("[r][e][q]");
     req.user = { id: decoded.id };
     next();
   } catch (error) {
