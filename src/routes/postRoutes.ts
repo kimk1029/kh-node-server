@@ -44,7 +44,15 @@ const upload = multer({
 });
 
 // 게시글 작성 (인증 필요, 이미지 업로드 포함)
-router.post("/", authMiddleware, upload.array('images', 5) as any, createPost);
+router.post(
+  '/',
+  authMiddleware,
+  (req, res, next) => (upload.single('image') as any)(req, res, (err: Error) => {
+    if (err) return next(err);
+    next();
+  }),
+  createPost
+);
 
 // 게시글 목록 조회
 router.get("/", getAllPosts);
