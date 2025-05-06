@@ -11,7 +11,7 @@ const createPost = async (
   next: NextFunction
 ): Promise<void> => {
   const postRepository = getRepository(Post);
-  
+  console.log("[[[[[[[[[[[[[[create]]]]]]]]]]]]");  
   // FormData에서 데이터 추출
   const title = req.body.title;
   const content = req.body.content;
