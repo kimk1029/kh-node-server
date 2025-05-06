@@ -43,9 +43,13 @@ router.post(
   "/",
   authMiddleware,
   upload.single("image") as any,
+  (req, res, next) => {
+    console.log('✅ Multer 통과, req.file =', req.file);
+    next();
+  },
   async (req, res, next) => {
+    console.log('▶ createPost 실행 직전');
     try {
-      console.log(">> createPost 호출 직전, req.file:", req.file);
       await createPost(req, res, next);
     } catch (err) {
       next(err);
