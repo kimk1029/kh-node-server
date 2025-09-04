@@ -9,6 +9,7 @@ import {
   getPostById,
   toggleLike,
   updatePost,
+  searchPosts,
 } from "../controllers/postController";
 import authMiddleware from "../middleware/authMiddleware";
 import {
@@ -65,6 +66,7 @@ router.post(
 );
 
 router.get("/", getAllPosts);
+router.get("/search", searchPosts);
 router.get("/:id", authMiddleware, getPostById);
 router.put("/:id", authMiddleware, updatePost);
 router.delete("/:id", authMiddleware, deletePost);

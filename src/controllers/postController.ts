@@ -341,6 +341,64 @@ const toggleLike = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// 게시글 검색 컨트롤러
+const searchPosts = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const postRepository = getRepository(Post);
+  const { query } = req.query; // 검색어
+
+  if (!query) {
+    res.status(400).json({ message: "검색어를 입력해주세요." });
+    return;
+  }
+
+  try {
+    const posts = await postRepository
+      .createQueryBuilder("post")
+      .leftJoinAndSelect("post.author", "author")
+      .leftJoin("post.comments", "comment")
+      .leftJoin("post.likes", "like")
+      .where("post.title LIKE :query OR post.content LIKE :query", {
+        query: `%${query}%`,
+      })
+      .select([
+        "post.id",
+        "post.title",
+        "post.content",
+        "post.created_at",
+        "post.views",
+        "author.id",
+        "author.username",
+        "post.tag",
+        "post.images"
+      ])
+      .addSelect("COUNT(DISTINCT comment.id)", "comments")
+      .addSelect("COUNT(DISTINCT like.id)", "likes")
+      .groupBy("post.id")
+      .addGroupBy("author.id")
+      .orderBy("post.created_at", "DESC")
+      .getRawAndEntities();
+
+    // Raw 데이터를 사용하여 댓글 수와 좋아요 수를 각 게시글에 매핑
+    const postsWithCommentAndLikeCount = posts.entities.map((post, index) => ({
+      ...post,
+      comments: Number(posts.raw[index]["comments"]),
+      likes: Number(posts.raw[index]["likes"]),
+      category: post.tag,
+      imageUrls: post.images ? post.images.map(image => `/uploads/${image}`) : []
+    }));
+
+    res.status(200).json(postsWithCommentAndLikeCount);
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export {
   createPost,
   getAllPosts,
@@ -349,4 +407,5 @@ export {
   deletePost,
   getLikedPosts,
   toggleLike,
+  searchPosts,
 };
